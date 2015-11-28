@@ -7,6 +7,7 @@
     red = document.querySelector('.red'),
     blue = document.querySelector('.blue'),
     green = document.querySelector('.green'),
+    alpha = document.querySelector('.alpha'),
     download = document.querySelector('.download');
 
   /**
@@ -32,13 +33,17 @@
   * DRAW CANVAS
   */
 
+
   var vert = 2,
       bleu = 2,
-      rouge = 2;
+      rouge = 2,
+      alpho = 1;
 
   video.addEventListener('play', function() {
     draw(this,ctx,400,300);
   }, false);
+
+
 
   green.addEventListener('input',function(){
     vert = green.value;
@@ -53,6 +58,11 @@
   red.addEventListener('input',function(){
     rouge = red.value;
     console.log("Niveau de rouge : " + rouge);
+  });
+
+  alpha.addEventListener('input', function(){
+    alpho = alpha.value;
+    console.log("Niveau d'alpha : " + alpho);
   });
 
   function draw(video, ctx, width, height) {
@@ -73,7 +83,7 @@
             data[i]           = rouge * red; // you can multiply the color and alpha values with a number between 0 and 1
             data[i + 1]       = vert * green;
             data[i + 2]       = bleu * blue;
-            data[i + 3]       = 1 * alpha;
+            data[i + 3]       = alpho * alpha;
 
     }
 
@@ -84,7 +94,7 @@
   download.addEventListener('click',function(){
     var dataURL = canvas.toDataURL();
     console.log(dataURL);
-  })
+  });
 
 
 })();
