@@ -1,14 +1,16 @@
-(function() {
+var canvas        = document.getElementById('canvas'),
+    ctx           = canvas.getContext('2d'),
+    video         = document.getElementById('video'),
+    vendorUrl     = window.URL || window.webkitURL,
+    w             = canvas.width,
+    h             = canvas.height,
+    red           = document.querySelector('.red'),
+    blue          = document.querySelector('.blue'),
+    green         = document.querySelector('.green'),
+    alpha         = document.querySelector('.alpha'),
+    download      = document.querySelector('.download');
 
-  var canvas = document.getElementById('canvas'),
-    ctx = canvas.getContext('2d'),
-    video = document.getElementById('video'),
-    vendorUrl = window.URL || window.webkitURL,
-    red = document.querySelector('.red'),
-    blue = document.querySelector('.blue'),
-    green = document.querySelector('.green'),
-    alpha = document.querySelector('.alpha'),
-    download = document.querySelector('.download');
+(function() {
 
   /**
    * WEBCAM AUTORISATION
@@ -26,23 +28,24 @@
     video.src = vendorUrl.createObjectURL(stream);
     video.play();
   }, function(error) {
-    window.alert("Pour appliquer des effets vidéo, le mieux c'est d'autorisé le site à afficher ta webcam...");
+    window.alert("Pour appliquer des effets vidéo, le mieux c'est d'autoriser le site à afficher ta webcam...");
   });
+
+})(); // Auto Start Function Wecam Require
+
 
   /**
   * DRAW CANVAS
   */
 
-
-  var vert = 2,
-      bleu = 2,
-      rouge = 2,
+  var vert = 0.5,
+      bleu = 0.5,
+      rouge = 0.5,
       alpho = 1;
 
   video.addEventListener('play', function() {
     draw(this,ctx,400,300);
   }, false);
-
 
 
   green.addEventListener('input',function(){
@@ -65,36 +68,48 @@
     console.log("Niveau d'alpha : " + alpho);
   });
 
+/**
+* DRAW FUNCTION
+**/
+
   function draw(video, ctx, width, height) {
 
-    ctx.drawImage(video,0,0,width,height);
-
-    var image, data, i, r, g, b, brightness;
-
-    image = ctx.getImageData(0,0,width,height);
-    data = image.data;
+    ctx.drawImage(video,0,0,w,h);
+    var image = ctx.getImageData(0,0,w,h);
+    var data = image.data;
 
     for(i = 0; i < data.length; i += 4) {
-            var red = data[i]; // 0 to 255
-            var green = data[i + 1]; // 0 to 255
-            var blue = data[i + 2]; // 0 to 255
-            var alpha = data[i + 3]; // 0 to 255
+      var red   = data[i],
+          green = data[i + 1],
+          blue  = data[i + 2],
+          alpho = data[i + 3],
+          gray = (red+green+blue)/3;
 
-            data[i]           = rouge * red; // you can multiply the color and alpha values with a number between 0 and 1
-            data[i + 1]       = vert * green;
-            data[i + 2]       = bleu * blue;
-            data[i + 3]       = alpho * alpha;
+      // Multiplier la valeur de la couleur entre 0 et 1
+
+      // data[i]           = rouge * red;
+      // data[i + 1]       = vert * green;
+      // data[i + 2]       = bleu * blue;
+      // data[i + 3]       = alpho * alpha;
+
+      data[i]           = gray;
+      data[i + 1]       = gray;
+      data[i + 2]       = gray;
 
     }
 
+    image.data = data;
     ctx.putImageData(image,0,0);
-    setTimeout(draw,10,video,ctx, width, height);
+
+    setTimeout(draw,10);
   }
+
+  /**
+  * CAPTURE AND DOWNLOAD
+  **/
 
   download.addEventListener('click',function(){
     var dataURL = canvas.toDataURL();
     console.log(dataURL);
+    window.open("dataURL","_self");
   });
-
-
-})();
