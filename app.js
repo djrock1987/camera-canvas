@@ -10,7 +10,8 @@
     alpha = document.querySelector('.alpha'),
     download = document.querySelector('.download'),
     rotate = document.querySelector('.rotate'),
-    flip = document.querySelector('.flip');
+    flip = document.querySelector('.flip'),
+    inverserbtn = document.querySelector('.inverse');
 
   /**
    * WEBCAM AUTORISATION
@@ -32,38 +33,16 @@
   });
 
   /**
-  * DRAW CANVAS
-  */
-
-
-  var vert  = 1,
-      bleu  = 1,
-      rouge = 1,
-      alpho = 1;
+  * DRAW VIDEO
+  **/
 
   video.addEventListener('play', function() {
     draw(this,ctx,400,300);
   }, false);
 
-  green.addEventListener('input',function(){
-    vert = green.value;
-    console.log("Niveau de vert : " + vert);
-  });
-
-  blue.addEventListener('input',function(){
-    bleu = blue.value;
-    console.log("Niveau de bleu : " + bleu);
-  });
-
-  red.addEventListener('input',function(){
-    rouge = red.value;
-    console.log("Niveau de rouge : " + rouge);
-  });
-
-  alpha.addEventListener('input', function(){
-    alpho = alpha.value;
-    console.log("Niveau d'alpha : " + alpho);
-  });
+  /**
+  * DRAW FUNCTION
+  **/
 
   function draw(video, ctx, width, height) {
 
@@ -74,53 +53,89 @@
     image = ctx.getImageData(0,0,width,height);
     data = image.data;
 
-    for(i = 0; i < data.length; i += 4) {
-            var red = data[i]; // 0 to 255
-            var green = data[i + 1]; // 0 to 255
-            var blue = data[i + 2]; // 0 to 255
-            // var alpha = data[i + 3]; // 0 to 255
-            var gray = (red+green+blue)/3;
+    // EFFECT
 
-            //RVB VARIATION
+    data[i]   = red;
+    data[i+1] = green;
+    data[i+2] = blue;
+    data[i+3] = alpha;
 
-            // data[i]           = rouge * red; // you can multiply the color and alpha values with a number between 0 and 1
-            // data[i + 1]       = vert * green;
-            // data[i + 2]       = bleu * blue;
+    // RGB VARIATION
+    var variation = function() {
+      for (i = 0; i < data.length; i += 4) {
 
-            // N&B
+        red     = rouge * red;
+        green   = vert * green;
+        blue    = bleu * blue;
 
-            // data[i]           = gray; // you can multiply the color and alpha values with a number between 0 and 1
-            // data[i + 1]       = gray;
-            // data[i + 2]       = gray;
+      }
+      ctx.putImageData(image, 0, 0);
+    };
 
-            // TV LOW QUALITY EFFECT
+    // BLACK & WHITE
+    var blackNwhite = function() {
+      for (i = 0; i < data.length; i += 4) {
 
-            // data[i]           = Math.random() * red; // you can multiply the color and alpha values with a number between 0 and 1
-            // data[i + 1]       = Math.random() * green;
-            // data[i + 2]       = Math.random() * blue;
+        var grayscale = (red + green + blue)/3; // Create the Grayscale Color
 
-            // NEGATIVE EFFECT
+        red     = grayscale;
+        green   = grayscale;
+        blue    = grayscale;
 
-            // data[i]   = 255 - data[i];   // red
-            // data[i+1] = 255 - data[i+1]; // green
-            // data[i+2] = 255 - data[i+2]; // blue
+      }
+      ctx.putImageData(image, 0, 0);
+    };
 
-            // SEPIA EFFECT
+    // BAD TV
+    var badtv = function() {
+      for (i = 0; i < data.length; i += 4) {
 
-            // data[i]           = (red * 0.393) + (green * 0.769) + (blue * 0.189);
-            // data[i + 1]       = (red * 0.349) + (green * 0.686) + (blue * 0.168);
-            // data[i + 2]       = (red * 0.272) + (green * 0.534) + (blue * 0.131);
+        red     = Math.random() * red;
+        green   = Math.random() * green;
+        blue    = Math.random() * blue;
 
-            // LINE
+      }
+      ctx.putImageData(image, 0, 0);
+    };
 
-            data[i] = 1*data[i] - 2*data[i + 2] + 2*data[i + (canvas.width*3.90)];
+    // INVERSE (NEGATIVE EFFECT)
+    var inverse = function() {
+      for (i = 0; i < data.length; i += 4) {
+
+        data[i]       = 255 - data[i];          // red
+        data[i + 1]   = 255 - data[i + 1];      // green
+        data[i + 2]   = 255 - data[i + 2];       // blue
+
+      }
+      ctx.putImageData(image, 0, 0);
+    };
+
+    // SEPIA EFFECT
+    var sepia = function() {
+      for (i = 0; i < data.length; i += 4) {
+
+        red     = (red * 0.393) + (green * 0.769) + (blue * 0.189);
+        green   = (red * 0.349) + (green * 0.686) + (blue * 0.168);
+        blue    = (red * 0.272) + (green * 0.534) + (blue * 0.131);
+
+      }
+      ctx.putImageData(image, 0, 0);
+    };
+
+    // FAKE 3D EFFECT
+    var fakeeffect = function() {
+      for (i = 0; i < data.length; i += 4) {
+
+        red     = red - 2*green + 2*data[i + (canvas.width*3.90)];
+
+      }
+      ctx.putImageData(image, 0, 0);
+    };
 
 
-
-    }
-
-    ctx.putImageData(image,0,0);
     setTimeout(draw,10,video,ctx, width, height);
+    inverserbtn.addEventListener('click', inverse);
+
   }
 
   rotate.addEventListener('click',function(){
@@ -137,6 +152,5 @@
     var dataURL = canvas.toDataURL();
     console.log(dataURL);
   });
-
 
 })();
