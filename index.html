@@ -1,29 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Canvas Camera Effect</title>
   <link rel="stylesheet" href="style.css">
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 </head>
+
 <body>
 
-    <div class="video">
-        <video id="video" width="400" height="400" autoplay></video>
-        <canvas id="canvas" width="400" height="400"></canvas>
-        <canvas id="smiley" width="200" height="200"></canvas>
+  <!-- GLOBAL CONTAINER -->
+  <div class="container">
+
+    <!-- LEFT OPTION BUTTON -->
+    <div class="left">
+      <button class="variation">RVB</button>
+      <button class="blackNwhite">B&amp;W</button>
+      <button class="inverse">Inverse</button>
     </div>
 
-    <input class="red" type="range" value="1" min="0" max="1" step="0.05">
-    <input class="green" type="range" value="1" min="0" max="1" step="0.05">
-    <input class="blue" type="range" value="1" min="0" max="1" step="0.05">
-    <input class="alpha" type="range" value="1" min="0" max="1" step="0.05">
+    <!-- VIDEO CONTAINER -->
+    <div class="center">
+      <div class="video">
+        <!-- RESET BUTTON -->
+        <p class="reset">reset</p>
+        <video id="video" autoplay></video> <!-- HIDDEN -->
+        <canvas id="canvas" width="400" height="300"></canvas>
+        <!-- BUTTON BOTTOM -->
+        <div class="bottom">
+          <button class="download" href="">DOWNLOAD</button>
+          <button class="rotate">ROTATE</button>
+          <button class="flip">FLIP</button>
+        </div>
+      </div>
+    </div>
 
-    <button class="download">DOWNLOAD</button>
-    <button class="rotate">ROTATE</button>
-    <button class="flip">FLIP</button>
+    <!-- RANGE HIDDEN OR NOT -->
+    <div class="range">
+      <input class="red" type="range" value="1" min="0" max="1" step="0.05">
+      <input class="green" type="range" value="1" min="0" max="1" step="0.05">
+      <input class="blue" type="range" value="1" min="0" max="1" step="0.05">
+    </div>
 
-    <button class="inverse">INVERSE</button>
+    <!-- RIGHT OPTION BUTTON -->
+    <div class="right">
+      <button class="tveffect">Bad TV</button>
+      <button class="sepia">Sepia</button>
+      <button class="dimension">3D</button>
+    </div>
 
+  </div>
+
+
+  <!-- JS -->
   <script src="app.js"></script>
 </body>
+
 </html>

@@ -1,17 +1,33 @@
 (function() {
 
+  /**
+  * ALL VARIABLES
+  **/
+
   var canvas = document.getElementById('canvas'),
     ctx = canvas.getContext('2d'),
     video = document.getElementById('video'),
     vendorUrl = window.URL || window.webkitURL,
-    red = document.querySelector('.red'),
-    blue = document.querySelector('.blue'),
-    green = document.querySelector('.green'),
-    alpha = document.querySelector('.alpha'),
+
+    redrange = document.querySelector('.red'),
+    bluerange = document.querySelector('.blue'),
+    greenrange = document.querySelector('.green'),
+
     download = document.querySelector('.download'),
     rotate = document.querySelector('.rotate'),
     flip = document.querySelector('.flip'),
-    inverserbtn = document.querySelector('.inverse');
+
+    effect = 'no',
+
+    blackNwhitebtn = document.querySelector('.blackNwhite'),
+    inversebtn = document.querySelector('.inverse'),
+    variationbtn = document.querySelector('.variation'),
+    badtvbtn = document.querySelector('.tveffect'),
+    sepiabtn = document.querySelector('.sepia'),
+    dimensionbtn = document.querySelector('.dimension'),
+    resetbtn = document.querySelector('.reset'),
+
+    controls = document.querySelector('.range');
 
   /**
    * WEBCAM AUTORISATION
@@ -33,124 +49,188 @@
   });
 
   /**
-  * DRAW VIDEO
-  **/
+   * DRAW VIDEO
+   **/
 
   video.addEventListener('play', function() {
-    draw(this,ctx,400,300);
+    draw(this, ctx, 400, 300);
   }, false);
 
   /**
-  * DRAW FUNCTION
-  **/
+   * DRAW FUNCTION
+   **/
+
+  // ONLY FOR VARIATION MODE RVB
+
+   var red     = 1,
+       green   = 1,
+       blue    = 1;
+
+  // RED
+   redrange.addEventListener('input',function(){
+     red = redrange.value;
+   });
+
+   // GREEN
+   greenrange.addEventListener('input',function(){
+     green = greenrange.value;
+   });
+
+   // BLUE
+   bluerange.addEventListener('input',function(){
+     blue = bluerange.value;
+   });
 
   function draw(video, ctx, width, height) {
 
-    ctx.drawImage(video,0,0,width,height);
+    ctx.drawImage(video, 0, 0, width, height);
 
-    var image, data, i, r, g, b, brightness;
+    var image = ctx.getImageData(0, 0, width, height);
+    var data = image.data;
 
-    image = ctx.getImageData(0,0,width,height);
-    data = image.data;
+    // VARIATION EFFECT
+    if(effect == 'variation') {
 
-    // EFFECT
-
-    data[i]   = red;
-    data[i+1] = green;
-    data[i+2] = blue;
-    data[i+3] = alpha;
-
-    // RGB VARIATION
-    var variation = function() {
       for (i = 0; i < data.length; i += 4) {
 
-        red     = rouge * red;
-        green   = vert * green;
-        blue    = bleu * blue;
+        data[i] = red * data[i];
+        data[i + 1] = green * data[i + 1];
+        data[i + 2] = blue * data[i + 2];
 
       }
       ctx.putImageData(image, 0, 0);
-    };
 
-    // BLACK & WHITE
-    var blackNwhite = function() {
+      // RESET
+    } else if (effect == 'reset') {
+
+        for (i = 0; i < data.length; i += 4) {
+
+          data[i] = data[i];
+          data[i + 1] = data[i + 1];
+          data[i + 2] = data[i + 2];
+
+        }
+        ctx.putImageData(image, 0, 0);
+
+      // B&W EFFECT
+    } else if (effect == 'blackNwhite') {
+
+        for (i = 0; i < data.length; i += 4) {
+
+          var grayscale = ( data[i] + data[i + 1] + data[i + 2] ) / 3; // Create the Grayscale Color
+
+          data[i] = grayscale;
+          data[i + 1] = grayscale;
+          data[i + 2] = grayscale;
+
+        }
+        ctx.putImageData(image, 0, 0);
+
+      // INVERSE EFFECT
+    } else if (effect == 'inverse') {
+
+        for (i = 0; i < data.length; i += 4) {
+
+          data[i] = 255 - data[i]; // red
+          data[i + 1] = 255 - data[i + 1]; // green
+          data[i + 2] = 255 - data[i + 2]; // blue
+
+        }
+        ctx.putImageData(image, 0, 0);
+
+      // BAD TV EFFECT
+    } else if (effect == 'badTv') {
+
+        for (i = 0; i < data.length; i += 4) {
+
+          data[i] = Math.random() * data[i];
+          data[i + 1] = Math.random() * data[i + 1];
+          data[i + 2] = Math.random() * data[i + 2];
+
+        }
+        ctx.putImageData(image, 0, 0);
+
+      // SEPIA EFFECT
+    } else if (effect == 'sepia') {
+
       for (i = 0; i < data.length; i += 4) {
 
-        var grayscale = (red + green + blue)/3; // Create the Grayscale Color
-
-        red     = grayscale;
-        green   = grayscale;
-        blue    = grayscale;
+        data[i] = (data[i] * 0.393) + (data[i + 1] * 0.769) + (data[i + 2] * 0.189);
+        data[i + 1] = (data[i] * 0.349) + (data[i + 1] * 0.686) + (data[i + 2] * 0.168);
+        data[i + 2] = (data[i] * 0.272) + (data[i + 1] * 0.534) + (data[i + 2] * 0.131);
 
       }
       ctx.putImageData(image, 0, 0);
-    };
 
-    // BAD TV
-    var badtv = function() {
+      // FAKE 3D EFFECT
+    } else if (effect == '3D') {
+
       for (i = 0; i < data.length; i += 4) {
 
-        red     = Math.random() * red;
-        green   = Math.random() * green;
-        blue    = Math.random() * blue;
+        data[i] = data[i] - 2 * data[i + 1] + 2 * data[i + (canvas.width * 3.90)];
 
       }
       ctx.putImageData(image, 0, 0);
-    };
 
-    // INVERSE (NEGATIVE EFFECT)
-    var inverse = function() {
-      for (i = 0; i < data.length; i += 4) {
+    }
 
-        data[i]       = 255 - data[i];          // red
-        data[i + 1]   = 255 - data[i + 1];      // green
-        data[i + 2]   = 255 - data[i + 2];       // blue
-
-      }
-      ctx.putImageData(image, 0, 0);
-    };
-
-    // SEPIA EFFECT
-    var sepia = function() {
-      for (i = 0; i < data.length; i += 4) {
-
-        red     = (red * 0.393) + (green * 0.769) + (blue * 0.189);
-        green   = (red * 0.349) + (green * 0.686) + (blue * 0.168);
-        blue    = (red * 0.272) + (green * 0.534) + (blue * 0.131);
-
-      }
-      ctx.putImageData(image, 0, 0);
-    };
-
-    // FAKE 3D EFFECT
-    var fakeeffect = function() {
-      for (i = 0; i < data.length; i += 4) {
-
-        red     = red - 2*green + 2*data[i + (canvas.width*3.90)];
-
-      }
-      ctx.putImageData(image, 0, 0);
-    };
-
-
-    setTimeout(draw,10,video,ctx, width, height);
-    inverserbtn.addEventListener('click', inverse);
+    // REFRESH 10 MS - WE CAN USE REQUEST ANIMATION FRAME TOO
+    setTimeout(draw, 10, video, ctx, width, height);
 
   }
 
-  rotate.addEventListener('click',function(){
-    ctx.scale(1,-1); //flip vertically
-    ctx.translate(0,-300); //move beneath original position
+
+  // BUTTON
+
+  variationbtn.addEventListener('click', function(){
+    effect = 'variation';
+    controls.style.display = 'block';
   });
 
-  flip.addEventListener('click',function(){
+  blackNwhitebtn.addEventListener('click', function(){
+    effect = 'blackNwhite';
+    controls.style.display = 'none';
+  });
+
+  inversebtn.addEventListener('click', function(){
+    effect = 'inverse';
+    controls.style.display = 'none';
+  });
+
+  badtvbtn.addEventListener('click', function(){
+    effect = 'badTv';
+    controls.style.display = 'none';
+  });
+
+  sepiabtn.addEventListener('click', function(){
+    effect = 'sepia';
+    controls.style.display = 'none';
+  });
+
+  dimensionbtn.addEventListener('click', function(){
+    effect = '3D';
+    controls.style.display = 'none';
+  });
+
+  resetbtn.addEventListener('click', function(){
+    effect = 'reset';
+    controls.style.display = 'none';
+  });
+
+
+  rotate.addEventListener('click', function() {
+    ctx.scale(1, -1); //flip vertically
+    ctx.translate(0, -300); //move beneath original position
+  });
+
+  flip.addEventListener('click', function() {
     ctx.translate(canvas.width, 0);
     ctx.scale(-1, 1);
   });
 
-  download.addEventListener('click',function(){
+  download.addEventListener('click', function() {
     var dataURL = canvas.toDataURL();
     console.log(dataURL);
   });
 
-})();
+})(); // FUNCTION GLOBAL START
