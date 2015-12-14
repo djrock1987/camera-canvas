@@ -17,6 +17,9 @@
     rotate = document.querySelector('.rotate'),
     flip = document.querySelector('.flip'),
 
+    coucou = querySelector;
+
+
     effect = 'no',
 
     blackNwhitebtn = document.querySelector('.blackNwhite'),
